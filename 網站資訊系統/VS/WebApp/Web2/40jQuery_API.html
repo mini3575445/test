@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <style>
+        #container {
+        width:1000px;
+        margin:auto;        
+        }
+            #container > #TravelData > div {
+                border: 2px groove #808080;
+                border-radius: 10px;
+                margin-top: 10px;
+                padding: 15px;
+            }
+                #container > #TravelData > div > img {
+                    width: inherit;
+                    /*inherit繼承父節點*/
+                }
+            
+            
+
+        .center {
+        text-align:center;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>全國農業旅遊休閒園區</h1>
+        輸入程式查詢：<input type="text" id="txtCity" /><input type="button" value="查詢" onclick="filter()"/>
+    </div>
+
+    <script src="Scripts/jquery-3.6.0.min.js"></script>
+    <script>
+        //若介面是給人看的為UI，給程式碼看的為API
+
+        //JQ把ajax做成函數
+
+        //備註資料怎麼處理
+            //1.使用新網頁顯示詳細資料
+            //2.放在title
+
+
+        //API filter
+        //有問題:
+        //1.Q：打"台"找不到"臺中"
+        //2.Q：$("#container").append(item);，搜尋"南投"再搜尋"彰化"，資料會被放在南投下面
+
+        let item = "";
+        filter();
+
+        $('#container').append("<div id='TravelData'></div>");
+
+        function filter() {
+            $.ajax({
+                type: 'get',
+                url: `https://data.coa.gov.tw/Service/OpenData/ODwsv/ODwsvAttractions.aspx?$filter=City+like+${$('#txtCity').val()}`,
+            success: function (data) {
+                //data是自己取
+                
+                $('#TravelData').empty();   //empty清空
+
+                for (var i = 0; i < data.length; i++) {
+                    //item += "<div>";
+                    //item += `<h1>${data[i].Name}</h1>`;
+                    //item += `<h2>${data[i].Tel}</h2>`;
+                    //item += `<h2>${data[i].Address}</h2>`;
+                    //item += "<img src='" + data[i].Photo + "' />";
+                    //item += `<p><a href="https://www.google.com.tw/maps/search/${data[i].Address}" target="_blank">點我看地圖</a></p>`
+                    //item += "</div>";
+                    //item += "<hr>";
+
+                    
+                    item = `<div title="${data[i].Introduction}">
+                                <h1 class="center">${data[i].Name}</h1>
+                                <div class="center"><img src="${data[i].Photo}" /></div>
+                                <h2>${data[i].Tel}</h2>
+                                <h2>${data[i].Address}</h2>
+                                <p><a href="https://www.google.com.tw/maps/search/${data[i].Address}" target="_blank">點我看地圖</a></p>
+                            </div>`;
+
+                    $("#TravelData").append(item);
+                }
+                
+            },
+            error: function () {
+                alert('error');
+            }
+        });
+        }
+        //如何在JQ寫CSS
+
+        function setStyle1() {
+            $('#container > h1:first-child').css({
+            'box-shadow': '0px 0px 20px black',
+                'padding': '15px;',
+                'background-color': '#FFFF00',
+
+            });
+            setTimeout("setStyle2()",500);
+        }
+        function setStyle2() {
+            $('#container > h1:first-child').css({
+                'box-shadow': '0px 0px 20px black',
+                'padding': '15px;',
+                'background-color': '#00FF00',
+                'color':'blue'
+            });
+            setTimeout("setStyle1()", 500);
+        }
+        setStyle1();
+
+        
+        
+    </script>
+</body>
+</html>
